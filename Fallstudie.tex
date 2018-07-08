@@ -3,20 +3,13 @@ In diesem Kapitel erfolgt die Beschreibung der technischen Realisierung dieser F
 
 \subsection{Verwendete Technologien}
 Damit die Fallstudie in einer angemessenen Art präsentiert werden kann, erfolgt die Realisierung des Projekts als Web-Applikation. Dafür wird mit \textit{Spring-Boot} ein quelloffenes Java-Framework verwendet. Darin enthaltene Komponenten wie \textit{SpringMVC} und der Applikation-Server \textit{Tomcat} ermöglichen eine konfigurationsarme Erstellung der Webanwendung. Die Webanwendung besteht im Wesentlichen aus einer serverseitigen (Backend) und einer clientseitigen (Frontend) Komponente.\\
-Das Backend folgt dem Architekturmuster Model-View-Controller. Die Controller-Klassen stellen REST-Schnittstellen bereit, durch die es möglich ist, einzelne Events zu senden und diese durch eine Complex Event Processing - Engine zu verarbeiten.\\
-Das Frontend wird durch Verwendung der \textit{Java Server Pages} - Technologie (JSP) in Kombination mit der \textit{Java Standard Tag Library} (JSTL) umgesetzt. Diese ermöglicht die Visualisierung des aktuellen Zustands des Straßenausschnitts, die Steuerung von Eventströmen und da in Abb.\ref{fig5} dargestellte Auslösen einzelner Events. Die Kommunikation zwischen Front- und Backend erfolgt durch den Einsatz von \textit{Asynchrounous JavaScript and XML} (AJAX) statt.\\
+Das Backend folgt dem Architekturmuster \textit{Model-View-Controller}. Die Controller-Klassen stellen REST-Schnittstellen bereit, durch die es möglich ist, einzelne Events zu senden und diese durch eine Complex Event Processing - Engine zu verarbeiten.\\
+Das Frontend wird durch Verwendung der \textit{Java Server Pages} - Technologie (JSP) in Kombination mit der \textit{Java Standard Tag Library} (JSTL) umgesetzt. Diese ermöglicht die Visualisierung des aktuellen Zustands des Straßenausschnitts, die Steuerung von Eventströmen und die Steuerung der Events. Die Kommunikation zwischen Front- und Backend erfolgt durch den Einsatz von AJAX (\textit{Asynchrounous JavaScript and XML}).\\
 Als Complex Event Processing - Engine wird \textit{Esper} verwendet. Esper ermöglicht die schnelle Verarbeitung großer Mengen eingehender Nachrichten und ist somit sehr gut für die Verwendung in Smart Traffic Szenarien geeignet. 
 
-\begin{figure}[ht]
-\begin{center}
-	\includegraphics[scale=0.7]{images/EventTrigger.png}
-	\caption{Auslöser für Events}
-	\label{fig5}
-\end{center}
-\end{figure}
 
 \subsection{Beschreibung der Ausgangslage}
-Das Szenario dieser Fallstudie beschreibt den fiktiven Kartenausschnitt aus Abb.\ref{fig2}. Dieser Ausschnitt besteht aus den drei Kreuzungen K1, K2 und K3, einer Nord-Süd-Achse S3 und einer West-Ost-Achse S1 als Hauptverkehrsstraßen sowie einen Bahnübergang welcher die West-Ost-Achse kreuzt. Die Verkehrsteilnehmer sind autonom fahrende (Einsatz-)Fahrzeuge, deren Fahrtrichtung durch Pfeile in den Tabellen auf Abb.\ref{fig2} dargestellt werden. Die für die Fahrzeuge relevante Tabelle befindet sich jeweils an der rechten Seite in Fahrtrichtung. Die Ereignisse in dieser Fallstudie beschränken sich auf die Kreuzung K2. Aus diesem Grund erfolgt die Verkehrslenkung an den Kreuzungen K1 und K3, weshalb für K2 keine Tabellen dargestellt werden. Als Ausweichrouten können die parallel verlaufende nördliche Straße S2 sowie die westlich von der S3 verlaufende S4 befahren werden. Diese werden verwendet, wenn es die Verkehrslage durch eines oder mehrere der möglichen nachfolgend aufgelisteten Szenarien erfordert.
+Das Szenario dieser Fallstudie beschreibt den fiktiven Kartenausschnitt aus Abb.\ref{fig2}. Dieser Ausschnitt besteht aus den drei Kreuzungen K1, K2 und K3, einer Nord-Süd-Achse S3 und einer West-Ost-Achse S1 als Hauptverkehrsstraßen sowie einen Bahnübergang welcher die West-Ost-Achse kreuzt. Die Verkehrsteilnehmer sind autonom fahrende (Einsatz-)Fahrzeuge, deren Fahrtrichtung durch Pfeile in den Tabellen auf Abb.\ref{fig2} dargestellt werden. Die für die Fahrzeuge relevante Tabelle befindet sich jeweils an der rechten Seite in Fahrtrichtung. Die grün umrandete Tabelle gibt als Beispiel die Fahrtrichtung für die aus westlicher Richtung auf der Straße S1 fahrenden Fahrzeuge vor. Die Ereignisse in dieser Fallstudie beschränken sich auf die Kreuzung K2. Aus diesem Grund erfolgt die Verkehrslenkung an den Kreuzungen K1 und K3, weshalb für K2 keine Tabellen dargestellt werden. Als Ausweichrouten können die parallel verlaufende nördliche Straße S2 sowie die westlich von der S3 verlaufende S4 befahren werden. Diese werden verwendet, wenn es die Verkehrslage durch eines oder mehrere der möglichen nachfolgend aufgelisteten Szenarien erfordert.
 
 \begin{itemize} 
 \item Unfall an Kreuzung K2
@@ -33,8 +26,28 @@ Das Szenario dieser Fallstudie beschreibt den fiktiven Kartenausschnitt aus Abb.
 
 Nachdem die Ausgangslage der Fallstudie beschrieben wurde, werden die Events in den nachfolgenden Abschnitten genauer beschrieben. Dabei werden sowohl die eingesetzten Statements als auch die Auswirkung der eintretenden Ereignisse auf das vorgestellte Szenario erläutert. Jedes Event enthält ein Attribut welches den Ort des Ereignisses beinhaltet. Durch diesen können mehrere gleichartige Ereignisse an unterschiedlichen Orten überwacht werden. Die Pfeile die sich durch ein eingetretenes Ereignis ändern, werden grün hervorgehoben.
 
+\subsection{Steuerung der Ereignisse}
+Die Steuerung der Ereignisse erfolgt wie bereits erwähnt über die WebUI. Dabei wird zwischen dem Verkehrsstrom als kontinuierlich auftretende Ereignisse und Einzelereignissen \textit{Bahnschranke}, \textit{Verkehrslage K2} und \textit{Stickoxid-Werte K2} unterschieden. Die Felder in Abb. \ref{fig5} dienen der Auslösung der Einzelereignisse.
 
+\begin{figure}[ht]
+\begin{center}
+	\includegraphics[scale=0.7]{images/EventTrigger.png}
+	\caption{Auslöser für Events}
+	\label{fig5}
+\end{center}
+\end{figure}
 
+Die Regelung des Verkehrsstroms erfolgt über die Beispielhaft in Abb. \ref{fig12} dargestellten Eingabefelder. Anhand dieser Werte, werden im Backend über separate Threads \textit{TrafficStartEvent} erzeugt. Diese Events beinhalten ein Attribut zur Angabe der gewünschten Fahrtrichtung, um sie für Esper unterscheidbar zu machen.
+
+\begin{figure}[ht]
+\begin{center}
+	\includegraphics[width=\textwidth]{images/verkehrsstrom.png}
+	\caption{Fahrzeuge pro Minute je Fahrrichtung}
+	\label{fig12}
+\end{center}
+\end{figure}
+
+Die Verarbeitung der Ereignisse durch Esper wird in den nachfolgenden Abschnitten erläutert.
 \subsection{Unfall an Kreuzung} \label{accident}
 
 Sobald das Feld \textit{Verkehrslage Kreuzung 2} ausgelöst wird, wird ein \textit{AccidentStartEvent} gesendet. Durch das Statement 
@@ -52,19 +65,19 @@ Dieser ändert die Fahrtrichtungen dahingehend, dass Einsatzfahrzeuge weiterhin 
 	\label{fig6}
 \end{figure}
 
-Damit im Anschluss an den Unfall die Verkehrsführung angepasst werden kann, werden zwei weitere Statements verwendet. Dabei ist zu beachten, dass zusätzlich die aktuelle Situation am Bahnübergang beachtet werden muss. Das nachfolgende Statement prüft, ob zusätzlich zum \textit{AccidentEndEvent} die \textit{RailroadCrossingBarrierClose-} und \textit{RailroadCrossingBarrierOpenEvents} in der gleichen Häufigkeit ausgelöst wurden. 
+Damit im Anschluss an den Unfall die Verkehrsführung angepasst werden kann, werden zwei weitere Statements verwendet. Dabei ist zu beachten, dass die aktuelle Situation am Bahnübergang beachtet werden muss. Das nachfolgende Statement prüft, ob zusätzlich zum \textit{AccidentEndEvent} die \textit{RailroadCrossingBarrierClose-} und \textit{RailroadCrossingBarrierOpenEvents} in der gleichen Häufigkeit ausgelöst wurden. Somit kann unterschieden werden, ob die Schranke zu dem Zeitpunkt geöffnet (gleiche Häufigkeit) oder geschlossen ist. 
 
 \begin{lstlisting}
 select crossing from AccidentEndEvent where ( (select count(*) from RailroadCrossingBarrierCloseEvent) = (select count(*) from RailroadCrossingBarrierOpenEvent))
 \end{lstlisting}
 
-Ist dies der Fall wird der \textit{AccidentEndBarrierOpenListener} ausgelöst. Dieser setzt die Verkehrsführung auf die Ausgangslage wie in Abb. \ref{fig5} zurück. Zur Abdeckung der Möglichkeit, dass nach Unfallende die Bahnschranke geschlossen ist, kommt das Statement
+Ist dies der Fall, wird der \textit{AccidentEndBarrierOpenListener} ausgelöst. Dieser setzt die Verkehrsführung auf die Ausgangslage wie in Abb. \ref{fig5} zurück. Zur Abdeckung der Möglichkeit, dass nach Unfallende die Bahnschranke geschlossen ist, kommt das Statement
 
 \begin{lstlisting}
 select crossing from AccidentEndEvent where ( (select count(*) from RailroadCrossingBarrierCloseEvent) != (select count(*) from RailroadCrossingBarrierOpenEvent))
 \end{lstlisting}
 
-zum Einsatz. Dieses wird ausgelöst wenn die Anzahl an \textit{RailroadCrossingBarrierCloseEvent} und \textit{RailroadCrossingBarrierOpenEvents} nicht den gleichen Wert ausweisen. Dann wird der \textit{AccidentEndBarrierClosedListener} ausgeführt die Verkehrslage entspricht der im nachfolgenden Abschnitt erläuterten Situation.
+zum Einsatz. Dieses wird ausgelöst wenn die Anzahl an \textit{RailroadCrossingBarrierCloseEvent} und \textit{RailroadCrossingBarrierOpenEvents} nicht den gleichen Wert ausweisen. Dann wird der \textit{AccidentEndBarrierClosedListener} ausgeführt und die Verkehrslage entspricht der im nachfolgenden Abschnitt erläuterten Situation.
 
 \subsection{Geschlossene Bahnschranke} \label{closedBarrier}
 
@@ -94,8 +107,6 @@ select railwayCrossing from RailroadCrossingBarrierOpenEvent where ( (select cou
 
 die nach dem gleichen Prinzip wie in Absatz \ref{accident} prüfen, ob die Anzahl an \textit{AccidentStart-} und \textit{AccidentEndEvents} gleich ist.\\
 Ist ein Unfallereignis aktiv, werden die Fahrzeuge gemäß dem Unfallereignis umgeleitet. Andernfalls werden die Fahrzeuge wieder über die optimalen Routen geführt.
-
-
 
 
 \subsection{Erhöhte Stickstoffbelastung}
@@ -171,8 +182,8 @@ select count(*) from TrafficStartEvent(direction = 'OtoW')#time(15 seconds) havi
 \end{lstlisting}
 
 löst den \textit{TrafficEndListener} aus, sobald sich die Anzahl der Fahrzeuge in beiden Richtungen auf drei oder weniger im 15 Sekunden-Intervall reduziert hat. Im Anschluss daran wird die Verkehrsführung in den Normalzustand zurück versetzt.\\
-Nach der Vorstellung der Fallstudie, erfolgt im nachfolgenden Kapitel ein Überblick über den bereits bestehenden Einsatz von Smart-Traffic.
 
+In diesem Kapitel wurde anhand eines fiktiven Verkehrs-Szenarios und real möglicher Ereignisse dargestellt, wie Event-Processing durch Esper realisiert werden kann. Dabei wurde deutlich, dass einzelne Ereignisse nie allein betrachtet werden dürfen, sondern immer im Zusammenhang mit anderen zeitnah eingetretenen Ereignissen.
 
 
 \clearpage

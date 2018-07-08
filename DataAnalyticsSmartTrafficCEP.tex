@@ -36,7 +36,7 @@
 %\pagestyle{scrheadings}
 \usepackage[small]{titlesec}
 \usepackage{colortbl}	
-\usepackage{cite}
+%\usepackage{cite}
 \usepackage{hyperref}
 \usepackage{amsmath}
 \usepackage{nicefrac}
@@ -47,6 +47,16 @@
 \usepackage{needspace}
 \usepackage[nottoc]{tocbibind}
 \usepackage{subfigure}
+\usepackage[
+    backend=biber,
+    style=authoryear-icomp,
+    sortlocale=de_DE,
+    natbib=true,
+    url=false, 
+    doi=true,
+    eprint=false
+]{biblatex}
+\addbibresource{literaturDataAnalytics.bib}
 %\pagestyle{myheadings}
 %\clearscrheadfoot
 \renewcommand{\thefootnote}{\arabic{footnote}} 
@@ -57,6 +67,7 @@
 %Titelseite (optional)
 \newcommand{\sectionnumbering}[1]{% 
   \setcounter{section}{0}% 
+  
    \renewcommand{\thesection}{\csname #1\endcsname{section}}} 
    
    
@@ -80,23 +91,26 @@ Die vorliegende Ausarbeitung behandelt eine Fallstudie über Complex Event Proce
 \normalsize
 \setlength{\parindent}{0pt}
 \newpage
-\sectionnumbering{Roman} 
+\sectionnumbering{Roman}
+\setcounter{tocdepth}{2}
 \tableofcontents
-\clearpage
-
-\clearpage 
 
 \clearpage
 \pagenumbering{arabic} 
 \sectionnumbering{arabic} 
 \include{Einleitung}
 \include{Motivation}
-\include{Fallstudie}
 \include{RealWorldSmartTraffic}
+\include{Fallstudie}
+
 %noch nicht existierender Content
 %\include{Ausblick}
 \include{Fazit}
+
+\printbibliography 
+\clearpage
 \listoffigures 
 \clearpage
 %\listoftables 
+
 \end{document}
