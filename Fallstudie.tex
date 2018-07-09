@@ -37,7 +37,7 @@ Die Steuerung der Ereignisse erfolgt wie bereits erwähnt über die WebUI. Dabei
 \end{center}
 \end{figure}
 
-Die Regelung des Verkehrsstroms erfolgt über die in Abb. \ref{fig12} beispielhaft dargestellten Eingabefelder. Diese Intervallwerte repräsentieren einen Verkehrssensor, welcher die angegebene Anzahl an Autos detektiert. Über separate Threads werden im Backend die Anzahl der Autos in \textit{TrafficStartEvents} übersetzt und kontinuierlich in den Ereignisstrom übergeben. Diese Events beinhalten ein Attribut zur Angabe der gewünschten Fahrtrichtung, um sie für Esper unterscheidbar zu machen.
+Die Regelung des Verkehrsstroms erfolgt über die in Abb. \ref{fig12} beispielhaft dargestellten Eingabefelder. Über separate Threads werden im Backend die Anzahl der Autos in \textit{TrafficStartEvents} übersetzt und kontinuierlich in den Ereignisstrom übergeben. Diese Events beinhalten ein Attribut zur Angabe der gewünschten Fahrtrichtung, um sie für Esper unterscheidbar zu machen.
 
 \begin{figure}[ht]
 \begin{center}
@@ -154,7 +154,7 @@ Der Verkehrsstrom in der Fallstudie wird mit kontinuierlich erzeugten \textit{Tr
 select count(*) from TrafficStartEvent(direction = 'OtoW')#time(15 seconds) having (count(*) >5 and count(*) <= 6)
 \end{lstlisting}
 
-die Anzahl der Fahrzeug, die von Ost nach West oder vice versa fahren. Liegt die Anzahl der gemessenen Fahrzeuge in einem 15-Sekunden-Intervall zwischen fünf und sechs, wird der \textit{TrafficStartListener} ausgelöst. Die aktuelle Situation ist in Abb. \ref{fig10} veranschaulicht.
+die Anzahl der Fahrzeuge, die von Ost nach West oder vice versa fahren. Liegt die Anzahl der gemessenen Fahrzeuge in einem 15-Sekunden-Intervall zwischen fünf und sechs, wird der \textit{TrafficStartListener} ausgelöst. Die aktuelle Situation ist in Abb. \ref{fig10} veranschaulicht.
 
 \begin{figure}[ht]
 	\includegraphics[width=\textwidth]{images/TrafficHigh.png}
